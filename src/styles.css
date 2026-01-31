@@ -1,0 +1,288 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  CURSORS (important limitation):
+  CSS cannot “scale down” a cursor image reliably. Size is defined by the PNG itself.
+  Fix: export MUCH smaller cursor PNGs and reference them here.
+
+  Put small assets in:
+  /public/cursor-default-sm.png  (suggested 16x16 or 20x20)
+  /public/cursor-pointer-sm.png  (suggested 16x16 or 20x20)
+*/
+html, body {
+  cursor: url("/cursor-default-sm.png") 4 4, auto;
+}
+a, button, [role="button"], input[type="submit"], input[type="button"], label {
+  cursor: url("/cursor-pointer-sm.png") 4 4, pointer;
+}
+
+/* Apple-like system font */
+:root {
+  color-scheme: light;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+html.dark { color-scheme: dark; }
+
+html { scroll-behavior: smooth; }
+
+/* Accent: light = blue, dark = burgundy */
+:root { --accent: #2563EB; --accent-ink: #ffffff; }
+html.dark { --accent: #6B0F1A; --accent-ink: #EDEBE7; }
+
+::selection { background: rgba(37, 99, 235, .20); }
+html.dark ::selection { background: rgba(107, 15, 26, .55); }
+
+/* Theme switch animation */
+html.theme-anim, html.theme-anim * {
+  transition:
+    background-color 260ms ease,
+    color 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease,
+    opacity 260ms ease,
+    transform 260ms ease,
+    filter 260ms ease;
+}
+
+/* Background textures */
+.noise {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(0,0,0,.05) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 80% 30%, rgba(0,0,0,.035) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 60% 80%, rgba(0,0,0,.03) 0 1px, transparent 1px 100%);
+  background-size: 180px 180px, 220px 220px, 260px 260px;
+  opacity: .12;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+html.dark .noise {
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(255,255,255,.06) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,.045) 0 1px, transparent 1px 100%),
+    radial-gradient(circle at 60% 80%, rgba(255,255,255,.04) 0 1px, transparent 1px 100%);
+  opacity: .35;
+  mix-blend-mode: overlay;
+}
+
+.gridfade {
+  background-image:
+    linear-gradient(to right, rgba(0,0,0,.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0,0,0,.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: .07;
+  mask-image: radial-gradient(circle at 50% 35%, black 0 55%, transparent 80%);
+  pointer-events: none;
+}
+html.dark .gridfade{
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,.05) 1px, transparent 1px);
+  opacity: .15;
+}
+
+/* Ambient accent motion (clean + slow) */
+.ambient-shift {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(37,99,235,.14), transparent 55%),
+    radial-gradient(circle at 82% 78%, rgba(0,0,0,.05), transparent 52%);
+  opacity: .85;
+  animation: ambientMove 18s ease-in-out infinite;
+}
+html.dark .ambient-shift {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(107,15,26,.22), transparent 58%),
+    radial-gradient(circle at 82% 78%, rgba(255,255,255,.06), transparent 56%);
+  opacity: .9;
+}
+@keyframes ambientMove {
+  0%   { transform: translate3d(0,0,0) scale(1); }
+  50%  { transform: translate3d(18px,-14px,0) scale(1.03); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+
+/* Canvas particles (behind content) */
+.bg-particles {
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+
+/* Vignettes */
+.light-vignette {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(37,99,235,.16), transparent 50%),
+    radial-gradient(circle at 70% 72%, rgba(0,0,0,.06), transparent 55%);
+  opacity: .9;
+  pointer-events: none;
+}
+html.dark .light-vignette { display: none; }
+
+.dark-vignette {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(107,15,26,.55), transparent 55%),
+    radial-gradient(circle at 85% 75%, rgba(255,255,255,.08), transparent 60%);
+  opacity: .9;
+  pointer-events: none;
+  display: none;
+}
+html.dark .dark-vignette { display: block; }
+
+/* Button shine */
+.shine { position: relative; overflow: hidden; }
+.shine::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-60%;
+  width:40%;
+  height:180%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
+  animation: sweep 2.6s ease-in-out infinite;
+  opacity:.8;
+}
+@keyframes sweep {
+  0% { transform: translateX(0) skewX(-18deg); }
+  55% { transform: translateX(340%) skewX(-18deg); }
+  100% { transform: translateX(340%) skewX(-18deg); }
+}
+
+/* Service card hover (subtle) */
+.service-card {
+  will-change: box-shadow, border-color, transform;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+.service-card:hover {
+  border-color: rgba(37,99,235,.22);
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.08),
+    0 0 0 1px rgba(37,99,235,.10);
+  transform: translateY(-2px);
+}
+html.dark .service-card:hover {
+  border-color: rgba(107,15,26,.28);
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.35),
+    0 0 0 1px rgba(107,15,26,.14);
+}
+
+/* Contact row + social chips */
+.contact-row:hover { background: rgba(0,0,0,.06); }
+html.dark .contact-row:hover { background: rgba(255,255,255,.06); }
+
+.social-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(0,0,0,.10);
+  background: rgba(0,0,0,.05);
+  padding: .75rem 1rem;
+  font-size: .875rem;
+  font-weight: 600;
+  transition: background 180ms ease, transform 180ms ease;
+}
+.social-chip:hover { background: rgba(0,0,0,.07); transform: translateY(-1px); }
+html.dark .social-chip {
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+}
+html.dark .social-chip:hover { background: rgba(255,255,255,.07); }
+
+/* Top scroll progress bar: stronger */
+.scrollbar-wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 60;
+  background: transparent;
+}
+.scrollbar-bar {
+  height: 100%;
+  transform-origin: 0% 50%;
+  opacity: 1;
+  background: linear-gradient(90deg, rgba(37,99,235,1), rgba(37,99,235,.75));
+  box-shadow: 0 0 18px rgba(37,99,235,.75);
+}
+html.dark .scrollbar-bar {
+  background: linear-gradient(90deg, rgba(107,15,26,1), rgba(107,15,26,.8));
+  box-shadow: 0 0 18px rgba(107,15,26,.8);
+}
+
+/* Page scrollbar (right) — theme-correct */
+html, body { scrollbar-width: thin; scrollbar-color: rgba(37,99,235,.65) transparent; }
+html.dark, html.dark body { scrollbar-color: rgba(107,15,26,.75) transparent; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(37,99,235,.72), rgba(37,99,235,.34));
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+html.dark::-webkit-scrollbar-thumb,
+html.dark body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(107,15,26,.82), rgba(107,15,26,.38));
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* HERO logo capsule (used only on xl+ via Tailwind) */
+.hero-logo-wrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 360px;
+  height: 140px;
+}
+.hero-logo-inner{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  height: 104px;              /* width > height => capsule */
+  border-radius: 9999px;      /* pill */
+  border: 1px solid rgba(0,0,0,.10);
+  background: rgba(255,255,255,.55);
+  box-shadow: 0 18px 40px rgba(0,0,0,.08);
+  backdrop-filter: blur(10px);
+}
+html.dark .hero-logo-inner{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 24px 60px rgba(0,0,0,.45);
+}
+.hero-logo-ring{
+  position: absolute;
+  inset: 10px;
+  border-radius: 9999px;
+  border: 1px solid rgba(37,99,235,.22);
+  box-shadow: 0 0 26px rgba(37,99,235,.18);
+  pointer-events: none;
+}
+html.dark .hero-logo-ring{
+  border: 1px solid rgba(107,15,26,.28);
+  box-shadow: 0 0 28px rgba(107,15,26,.22);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .shine::after { animation: none !important; }
+  .ambient-shift { animation: none !important; }
+  .hero-logo-ring { animation: none !important; }
+}
